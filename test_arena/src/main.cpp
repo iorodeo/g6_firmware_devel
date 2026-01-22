@@ -2,13 +2,21 @@
 #include <Streaming.h>
 #include <ArduinoEigen.h>
 
-constexpr uint32_t NUM_BYTES = 200; 
+constexpr uint32_t NUM_BYTES = 53; 
+
 const uint8_t  SPI_CS_PIN = 0;
 //const uint8_t  SPI_CS_PIN = 2;
 //const uint8_t  SPI_CS_PIN = 3;
 //const uint8_t  SPI_CS_PIN = 4;
 const uint32_t SPI_SPEED = 10000000;
-const uint64_t DT_SHIFT = 100;
+
+
+// SPI Commands (level 1)
+const uint8_t CMD_ID_COMMS_CHECK = 0x01;
+const uint8_t CMD_ID_DISPLAY_GRAY_2 = 0x10;
+const uint8_t CMD_ID_DISPLAY_GRAY_16 = 0x30;
+
+
 
 SPISettings spi_settings(SPI_SPEED, MSBFIRST, SPI_MODE3);
 
@@ -24,6 +32,8 @@ void setup() {
 void loop() {
     static uint32_t count = 0;
     static uint8_t data[NUM_BYTES] {0};
+
+    data[1] = CMD_ID_COMMS_CHECK;
 
     for (size_t i=0; i<NUM_BYTES; i++) {
         data[i] =  uint8_t(i);

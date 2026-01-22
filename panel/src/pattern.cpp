@@ -1,4 +1,32 @@
 #include "pattern.h"
 
-Pattern::Pattern() { }
+Pattern::Pattern() {}
+
+GrayLevel Pattern::gray_level() {
+    return gray_level_;
+}
+
+uint8_t &Pattern::at(size_t i, size_t j) {
+    return matrix_(i,j);
+}
+
+void Pattern::set_gray_level(GrayLevel gray_level) {
+    gray_level_ = gray_level;
+}
+
+
+uint8_t Pattern::stretch() {
+    return stretch_;
+}
+
+
+void Pattern::set_stretch(uint8_t stretch) {
+    stretch_ = stretch;
+}
+
+
+PixelMatrix &Pattern::matrix() {
+    return matrix_;
+}
+
 

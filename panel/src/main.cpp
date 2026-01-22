@@ -2,11 +2,6 @@
 #include "constants.h"
 #include "messenger.h"
 
-//#include <ArduinoEigen.h>
-//#include <bitset>
-//#include <pico.h>
-//#include <hardware/spi.h>
-
 
 // Core 0
 // -----------------------------------------------------------
@@ -33,7 +28,6 @@ void setup1() {
 void loop1() {
     delay(100);
 }
-
 
 
 

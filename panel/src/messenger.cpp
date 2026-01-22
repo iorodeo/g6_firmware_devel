@@ -2,12 +2,10 @@
 #include <hardware/gpio.h>
 #include "messenger.h"
 #include "panel_spi_custom.h"
-
 #include <Streaming.h>
 
 
-Messenger::Messenger() {
-}
+Messenger::Messenger() {}
 
 void Messenger::initialize() { 
 
@@ -31,21 +29,50 @@ void Messenger::update() {
 
     panel_spi_read(msg);
 
-    bool parity_ok = msg.check_parity();
 
+    msg_count_ += 1;
+    if (msg_count_ % 1000 == 0) {
+        //msg.to_comms_check();
 
-    count_ += 1;
-    if (count_ % 1000 == 0) {
-        Serial << "count: " << count_; 
-        Serial << ", parity_bit  = " << msg.parity_bit();
-        Serial << ", parity_calc = " << msg.calculate_parity_bit() << endl;
+        Pattern pat;
+
+        pat.matrix() << 
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; 
+        
+        msg.from_pattern(pat);
+
+        Serial << endl;
+        for (size_t i=0; i<msg.payload_size(); i++) {
+            Serial << i << ", " << msg.payload_at(i) << endl;
+        }
+        Serial << endl;
+
+        bool length_ok = msg.check_length();
+        bool parity_ok = msg.check_parity();
+        Serial << "msg_count: " << msg_count_ << endl;; 
+        Serial << "length_ok: " << length_ok << endl;
+        Serial << "parity_ok: " << parity_ok << endl;
+        Serial << endl;
         //msg.print_data();
-    }
-
-    // Read spi messages (blocking)
-    //msg.num_bytes = custom_spi_read_blocking(spi0, 0, msg.data, SPI_BUFF_SIZE, SPI_CS_PIN);
-    if (msg.num_bytes() != 200) {
-        Serial << "short!"<< endl; 
     }
 
 }

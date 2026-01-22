@@ -51,5 +51,11 @@ int __not_in_flash_func(custom_spi_read_blocking)(
 
 
 void panel_spi_read(Message &msg) {
-    msg.num_bytes() = custom_spi_read_blocking(spi0, 0, msg.data_ptr(), SPI_BUFF_SIZE, SPI_CS_PIN);
+    msg.num_bytes_ = custom_spi_read_blocking(
+            spi0, 
+            0, 
+            msg.data_.data(), 
+            MESSAGE_MAXIMUM_SIZE, 
+            SPI_CS_PIN
+            );
 }

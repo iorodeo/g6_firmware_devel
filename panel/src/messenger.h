@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include "message.h"
 
+using CommandUMap = std::unordered_map<uint8_t, std::function<void(Message&)>>;
+
 
 class Messenger {
 
@@ -13,10 +15,9 @@ class Messenger {
         void initialize();
         void update();
 
-
     protected:
-        std::unordered_map<uint8_t, std::function<void(Message&)>> cmd_table_;
-        uint64_t count_ = 0;
+        uint64_t msg_count_ = 0;
+        CommandUMap cmd_umap_;
 
 };
 

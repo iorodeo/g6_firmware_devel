@@ -1,7 +1,8 @@
 #ifndef PATTERN_H
 #define PATTERN_H
 #include <ArduinoEigen.h>
-#include "constants.h"
+//#include "constants.h"
+#include "protocol.h"
 
 using PixelMatrix = Eigen::Matrix<uint8_t, PANEL_SIZE, PANEL_SIZE>; 
 

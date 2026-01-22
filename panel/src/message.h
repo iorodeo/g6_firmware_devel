@@ -1,7 +1,8 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 #include <array>
-#include "constants.h"
+//#include "constants.h"
+#include "protocol.h"
 #include "pattern.h"
 
 class Message {
@@ -31,6 +32,7 @@ class Message {
         void payload_to_zeros();
 
         void from_pattern(Pattern &pat, uint8_t protocol=CMD_PROTOCOL);
+        void to_pattern(Pattern &pat, bool &err);
         Pattern to_pattern(bool &err);
 
         void to_comms_check(uint8_t protocol=CMD_PROTOCOL);

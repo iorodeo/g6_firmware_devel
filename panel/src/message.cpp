@@ -86,8 +86,13 @@ void Message::from_pattern(Pattern &pat, uint8_t protocol) {
 }
 
 Pattern Message::to_pattern(bool &err) {
-
     Pattern pat;
+    to_pattern(pat, err);
+    return pat;
+}
+
+void Message::to_pattern(Pattern &pat, bool &err) {
+
     uint8_t cmd = command_byte();
     Serial << "cmd: " << cmd << endl;
 
@@ -112,7 +117,6 @@ Pattern Message::to_pattern(bool &err) {
                 break;
         }
     }
-    return pat;
 }
 
 void Message::to_comms_check(uint8_t protocol) {

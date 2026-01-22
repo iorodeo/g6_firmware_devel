@@ -20,18 +20,20 @@ extern const uint32_t SPI_SPEED;
 extern const uint8_t CMD_PROTOCOL_V1;
 extern const uint8_t CMD_PROTOCOL;
 
-// Commands (level 1)
-extern const uint8_t CMD_ID_COMMS_CHECK;
-extern const uint8_t CMD_ID_DISPLAY_GRAY_2;
-extern const uint8_t CMD_ID_DISPLAY_GRAY_16;
+enum CommandId: uint8_t {
+    // Commands (level 1)
+    CMD_ID_COMMS_CHECK       = 0x01,
+    CMD_ID_DISPLAY_GRAY_2    = 0x10,
+    CMD_ID_DISPLAY_GRAY_16   = 0x30,
 
-// Commands (level 2)
-extern const uint8_t CMD_ID_QUERY_DIAGNOSTIC;
-extern const uint8_t CMD_ID_RESET_DIAGNOSTICS;
-extern const uint8_t CMD_ID_RESET_PSRAM;
-extern const uint8_t CMD_ID_SET_PSRAM_GRAY_2;
-extern const uint8_t CMD_ID_SET_PSRAM_GRAY_16;
-extern const uint8_t CMD_ID_DISPLAY_PSRAM;
+    // Commands (level 2)
+    CMD_ID_QUERY_DIAGNOSTIC  = 0x02,
+    CMD_ID_RESET_DIAGNOSTICS = 0x03,
+    CMD_ID_RESET_PSRAM       = 0x0F,
+    CMD_ID_SET_PSRAM_GRAY_2  = 0x1F,
+    CMD_ID_SET_PSRAM_GRAY_16 = 0x3F,
+    CMD_ID_DISPLAY_PSRAM     = 0x50,
+};
 
 // Header and payload sizes
 extern const size_t HEADER_SIZE;
@@ -43,6 +45,9 @@ extern const size_t MESSAGE_MINIMUM_SIZE;
 
 using PayloadSizeUMap = std::unordered_map<uint8_t, size_t>;
 extern const PayloadSizeUMap PAYLOAD_SIZE_UMAP;
+
+using DisplayCommandsUMap = std::unordered_map<uint8_t, uint8_t>;
+extern const DisplayCommandsUMap DISPLAY_COMMANDS_UMAP;
 
 // Led column and row pins
 extern const Eigen::Vector<uint8_t, PANEL_SIZE> COL_PIN;

@@ -28,6 +28,7 @@ class Message {
 
         size_t payload_size();
         uint8_t &payload_at(size_t n);
+        void payload_to_zeros();
 
         void from_pattern(Pattern &pat, uint8_t protocol=CMD_PROTOCOL);
         Pattern to_pattern(bool &err);
@@ -48,6 +49,9 @@ class Message {
 
         void from_pattern_gray_2(Pattern &pat, uint8_t protocol);
         void from_pattern_gray_16(Pattern &pat, uint8_t protocol);
+
+        void to_pattern_gray_2(Pattern &pat);
+        void to_pattern_gray_16(Pattern &pat);
 
 };
 

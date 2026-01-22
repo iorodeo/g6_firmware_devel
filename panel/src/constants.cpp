@@ -15,19 +15,6 @@ const uint32_t SPI_SPEED = 30000000;
 const uint8_t CMD_PROTOCOL_V1 = 0x01;
 const uint8_t CMD_PROTOCOL = CMD_PROTOCOL_V1;
 
-// Commands (level 1)
-const uint8_t CMD_ID_COMMS_CHECK = 0x01;
-const uint8_t CMD_ID_DISPLAY_GRAY_2 = 0x10;
-const uint8_t CMD_ID_DISPLAY_GRAY_16 = 0x30;
-
-// Commands (level 2)
-const uint8_t CMD_ID_QUERY_DIAGNOSTIC = 0x02;
-const uint8_t CMD_ID_RESET_DIAGNOSTICS = 0x03;
-const uint8_t CMD_ID_RESET_PSRAM = 0x0F;
-const uint8_t CMD_ID_SET_PSRAM_GRAY_2 = 0x1F;
-const uint8_t CMD_ID_SET_PSRAM_GRAY_16 = 0x3F;
-const uint8_t CMD_ID_DISPLAY_PSRAM = 0x50;
-
 // Header and payload sizes
 const size_t HEADER_SIZE = 2;
 const size_t PAYLOAD_MINIMUM_SIZE = 1;
@@ -40,6 +27,12 @@ const PayloadSizeUMap PAYLOAD_SIZE_UMAP {
     {CMD_ID_COMMS_CHECK,     PAYLOAD_COMMS_CHECK}, 
     {CMD_ID_DISPLAY_GRAY_2,  PAYLOAD_DISPLAY_GRAY_2},
     {CMD_ID_DISPLAY_GRAY_16, PAYLOAD_DISPLAY_GRAY_16},
+};
+
+const DisplayCommandsUMap DISPLAY_COMMANDS_UMAP {
+    // for lookup - only care about keys
+    {CMD_ID_DISPLAY_GRAY_2,  0},  
+    {CMD_ID_DISPLAY_GRAY_16, 0},
 };
 
 // LED Column and Row pins

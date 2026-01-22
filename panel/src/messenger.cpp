@@ -26,18 +26,18 @@ void Messenger::initialize() {
 void Messenger::update() { 
 
     static Message msg;
-
     panel_spi_read(msg);
-
 
     msg_count_ += 1;
     if (msg_count_ % 1000 == 0) {
         //msg.to_comms_check();
 
         Pattern pat;
+        pat.set_gray_level(GrayLevel::Gray_2);
+        pat.set_stretch(255);
 
         pat.matrix() << 
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+            1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -57,20 +57,42 @@ void Messenger::update() {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; 
-        
+
+        Message msg; 
         msg.from_pattern(pat);
 
         Serial << endl;
+
         for (size_t i=0; i<msg.payload_size(); i++) {
             Serial << i << ", " << msg.payload_at(i) << endl;
         }
         Serial << endl;
 
+        bool err = false;
+        Pattern pat2 = msg.to_pattern(err);
+        Serial << "err: " << err << endl;
+        for (size_t i=0; i<PANEL_SIZE; i++) {
+            for (size_t j=0; j<PANEL_SIZE; j++) {
+                Serial << pat2.at(i,j) << " ";
+            }
+            Serial << endl;
+        }
+        Serial << endl;
+
+
         bool length_ok = msg.check_length();
         bool parity_ok = msg.check_parity();
-        Serial << "msg_count: " << msg_count_ << endl;; 
-        Serial << "length_ok: " << length_ok << endl;
-        Serial << "parity_ok: " << parity_ok << endl;
+        Serial << "gray_level: ";
+        if (pat.gray_level() == GrayLevel::Gray_2) {
+            Serial << 2;
+        }
+        else {
+            Serial << 16;
+        }
+        Serial << endl;
+        Serial << "msg_count:  " << msg_count_ << endl;; 
+        Serial << "length_ok:  " << length_ok << endl;
+        Serial << "parity_ok:  " << parity_ok << endl;
         Serial << endl;
         //msg.print_data();
     }

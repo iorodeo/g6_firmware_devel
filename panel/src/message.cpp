@@ -86,7 +86,32 @@ void Message::from_pattern(Pattern &pat, uint8_t protocol) {
 }
 
 Pattern Message::to_pattern(bool &err) {
+
     Pattern pat;
+    uint8_t cmd = command_byte();
+    Serial << "cmd: " << cmd << endl;
+
+    // Check if message is something we can create a display pattern
+    // from.  If not exit with error. 
+    if (DISPLAY_COMMANDS_UMAP.find(cmd) == DISPLAY_COMMANDS_UMAP.end()) {
+        err = true;
+    }
+    else {
+        switch (cmd) {
+            case CMD_ID_DISPLAY_GRAY_2:
+                to_pattern_gray_2(pat);
+                break;
+
+            case CMD_ID_DISPLAY_GRAY_16:
+                to_pattern_gray_16(pat);
+                break;
+
+            default:
+                // We shouldn't be here
+                err = true;
+                break;
+        }
+    }
     return pat;
 }
 
@@ -116,6 +141,13 @@ size_t Message::payload_size() {
 uint8_t &Message::payload_at(size_t n) {
     size_t i = std::min(n + HEADER_SIZE, num_bytes_-1);
     return data_.at(i);
+}
+
+
+void Message::payload_to_zeros() {
+    for (size_t i=0; i<payload_size(); i++) {
+        payload_at(i) = 0;
+    }
 }
 
 
@@ -171,15 +203,14 @@ void Message::from_pattern_gray_2(Pattern &pat, uint8_t protocol) {
     for (size_t i=0; i<PANEL_SIZE; i++) {
         for (size_t j=0; j<PANEL_SIZE; j++) {
             size_t byte_num = pixel_num/8;
-            // TODO: change to MSB 
-            size_t bit_pos = pixel_num - 8*byte_num;
+            size_t bit_pos = 7 - (pixel_num - 8*byte_num);
             uint8_t pixel_value = pat.at(i,j) & 0b00000001;
             bitWrite(payload_at(byte_num), bit_pos, pixel_value);
             pixel_num++;
         }
     }
 
-    // Add stretch value
+    // Add stretch value (last item)
     data_.at(total_size-1) = pat.stretch();
     set_parity_bit();
 }
@@ -202,16 +233,71 @@ void Message::from_pattern_gray_16(Pattern &pat, uint8_t protocol) {
     size_t pixel_num = 0;
     for (size_t i=0; i<PANEL_SIZE; i++) {
         for (size_t j=0; j<PANEL_SIZE; j++) {
-            uint8_t bit_shift  = (pixel_num%2 == 0) ? 0 : 4;
-            uint8_t pixel_value = (pat.at(i,j) >> bit_shift) & 0b00001111;
-
-
+            size_t byte_num = pixel_num/2;
+            uint8_t pixel_value = pat.at(i,j) & 0b00001111;
+            uint8_t upper = 0;
+            uint8_t lower = 0;
+            if (pixel_num%2 ==0) {
+                upper = pixel_value << 4;
+                lower = payload_at(byte_num) & 0b00001111;
+            }
+            else {
+                upper = payload_at(byte_num) & 0b11110000;
+                lower = pixel_value;
+            }
+            payload_at(byte_num) = upper | lower;
             pixel_num++;
         }
     }
 
-    // Add stretch value
+    // Add stretch value (last item)
     data_.at(total_size-1) = pat.stretch();
     set_parity_bit();
+}
+
+
+void Message::to_pattern_gray_2(Pattern &pat) {
+    if (command_byte() != CMD_ID_DISPLAY_GRAY_2) {
+        return;
+    }
+    pat.set_gray_level(GrayLevel::Gray_2);
+    // Extract pixel values
+    size_t pixel_num = 0;
+    for (size_t i=0; i<PANEL_SIZE; i++) {
+        for (size_t j=0; j<PANEL_SIZE; j++) {
+            size_t byte_num = pixel_num/8;
+            size_t bit_pos = 7 - (pixel_num - 8*byte_num);
+            pat.at(i,j) = bitRead(payload_at(byte_num), bit_pos);
+            pixel_num++;
+        }
+    }
+    // Set stretch to last payload value
+    pat.set_stretch(data_.at(num_bytes_-1));
+}
+
+
+void Message::to_pattern_gray_16(Pattern &pat) {
+    if (command_byte() != CMD_ID_DISPLAY_GRAY_16) {
+        return;
+    }
+    pat.set_gray_level(GrayLevel::Gray_16);
+    // Extract pixel values
+    size_t pixel_num = 0;
+    for (size_t i=0; i<PANEL_SIZE; i++) {
+        for (size_t j=0; j<PANEL_SIZE; j++) {
+            size_t byte_num = pixel_num/2;
+            uint8_t pixel_value = 0;
+            if (pixel_num%2 == 0) {
+                pixel_value = (payload_at(byte_num) & 0b11110000) >> 4;
+            }
+            else {
+                pixel_value = payload_at(byte_num) & 0b00001111;
+            }
+            pat.at(i,j) = pixel_value;
+            pixel_num++;
+        }
+    }
+    // Set stretch to last payload value
+    pat.set_stretch(data_.at(num_bytes_-1));
 }
 

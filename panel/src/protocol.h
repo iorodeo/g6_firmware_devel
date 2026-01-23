@@ -40,9 +40,12 @@ using DisplayCommandsUMap = std::unordered_map<uint8_t, uint8_t>;
 extern const DisplayCommandsUMap DISPLAY_COMMANDS_UMAP;
 
 // Pattern graylevels
+constexpr size_t MAX_GRAY_LEVEL = 16;
 enum class GrayLevel {
     Gray_2, 
     Gray_16, 
 };
+using GrayLevelUMap = std::unordered_map<GrayLevel, uint8_t>;
+extern const GrayLevelUMap GRAY_LEVEL_UMAP;
 
 #endif

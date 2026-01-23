@@ -1,5 +1,8 @@
 #include "constants.h"
 
+// USB/Serial parameters
+const uint32_t BAUDRATE = 115200;
+
 // SPI pins
 const uint8_t SPI_SCK_PIN = 34;
 const uint8_t SPI_MOSI_PIN = 32;
@@ -17,3 +20,7 @@ const Eigen::Vector<uint8_t, PANEL_SIZE> COL_PIN
 
 const Eigen::Vector<uint8_t, PANEL_SIZE> ROW_PIN 
     {21,22,23,24,25,26,27,28,29,30,31,36,37,38,39,40,41,42,43,44};
+
+// Display parameters
+const size_t DISPLAY_QUEUE_SIZE = 5;
+const uint8_t NUM_COLOR = 4;

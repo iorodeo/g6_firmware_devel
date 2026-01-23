@@ -23,3 +23,7 @@ const DisplayCommandsUMap DISPLAY_COMMANDS_UMAP {
     {CMD_ID_DISPLAY_GRAY_2,  0},  
     {CMD_ID_DISPLAY_GRAY_16, 0},
 };
+const GrayLevelUMap GRAY_LEVEL_UMAP  {
+    {GrayLevel::Gray_2,   2}, 
+    {GrayLevel::Gray_16, 16},
+};

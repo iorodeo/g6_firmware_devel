@@ -2,6 +2,7 @@
 #define MESSAGE_RECEIVER_H
 #include <functional>
 #include <unordered_map>
+#include "pico/util/queue.h"
 #include "pattern.h"
 #include "message.h"
 
@@ -12,13 +13,14 @@ class Messenger {
 
     public:
 
-        Messenger();
+        Messenger(queue_t &display_queue);
         void initialize();
         void update();
 
     protected:
 
         Pattern pat_;
+        queue_t &display_queue_;
         uint64_t msg_count_ = 0;
 
         CommandUMap cmd_umap_; 

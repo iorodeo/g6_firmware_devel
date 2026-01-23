@@ -94,7 +94,6 @@ Pattern Message::to_pattern(bool &err) {
 void Message::to_pattern(Pattern &pat, bool &err) {
 
     uint8_t cmd = command_byte();
-    Serial << "cmd: " << cmd << endl;
 
     // Check if message is something we can create a display pattern
     // from.  If not exit with error. 
@@ -175,6 +174,11 @@ uint8_t Message::calculate_8bit_checksum() {
        sum += data_.at(i);
     }
     return uint8_t(sum);
+}
+
+
+uint8_t *Message::data_ptr() {
+    return data_.data();
 }
 
 

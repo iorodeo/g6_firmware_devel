@@ -6,7 +6,7 @@
 #include <Streaming.h>
 
 
-Messenger::Messenger() {
+Messenger::Messenger(queue_t &display_queue) : display_queue_(display_queue) {
 
     // Load callbacks into command table
     cmd_umap_.insert( {
@@ -46,31 +46,32 @@ void Messenger::update() {
 
     static Message msg;
     panel_spi_read(msg);
+    msg_count_ += 1;
 
-    // Check message parity and length
-    if (!msg.check_parity()) {
-        // Parity error
-    }
-    if (!msg.check_length()) {
-        // Length error
-    }
-
-    uint8_t cmd_id = msg.command_byte();
-    if (cmd_umap_.count(cmd_id) > 0) {
-        // Command found run appropriate action
-        cmd_umap_.at(cmd_id)(msg);
-    }
-    else {
-        // Command not found, cmd id error 
+    bool parity_ok = msg.check_parity(); 
+    bool length_ok = msg.check_length();
+    bool cmd_ok = false; 
+    if (parity_ok && length_ok) {
+        uint8_t cmd_id = msg.command_byte();
+        if (cmd_umap_.count(cmd_id) > 0) {
+            cmd_umap_.at(cmd_id)(msg);
+            cmd_ok = true;
+        }
     }
 
     // DEVEL
     // -----------------------------------------------------------
-    msg_count_ += 1;
     if (msg_count_ % 1000 == 0) {
+        //for (size_t i=0; i<PANEL_SIZE; i++) {
+        //    for (size_t j=0; j<PANEL_SIZE; j++) {
+        //        Serial << pat_.at(i,j) << " ";
+        //    }
+        //    Serial << endl;
+        //}
         Serial << "msg_count:  " << msg_count_ << endl;; 
-        Serial << "length_ok:  " << msg.check_length() << endl;
-        Serial << "parity_ok:  " << msg.check_parity() << endl;
+        Serial << "parity_ok:  " << parity_ok << endl;
+        Serial << "length_ok:  " << length_ok << endl;
+        Serial << "cmd_ok:     " << cmd_ok << endl;
         Serial << endl;
         //msg.print_data();
     }
@@ -86,12 +87,16 @@ void Messenger::on_cmd_comms_check(Message &msg) {
 void Messenger::on_cmd_display_gray_2(Message &msg) {
     bool err = false;
     msg.to_pattern(pat_, err);
+    queue_try_add(&display_queue_, &pat_);
+    //queue_add_blocking(&display_queue_, &pat_);
 }
 
 
 void Messenger::on_cmd_display_gray_16(Message &msg) {
     bool err = false;
     msg.to_pattern(pat_, err);
+    queue_try_add(&display_queue_, &pat_);
+    //queue_add_blocking(&display_queue_, &pat_);
 }
 
 

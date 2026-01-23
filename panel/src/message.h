@@ -40,6 +40,8 @@ class Message {
         uint8_t calculate_parity_bit();
         uint8_t calculate_8bit_checksum();
 
+        uint8_t *data_ptr();
+
         void print_data();
 
         friend void panel_spi_read(Message &msg); 

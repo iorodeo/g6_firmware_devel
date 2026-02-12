@@ -1,3 +1,4 @@
+#include <array>
 #include <SPI.h>
 #include <Streaming.h>
 #include <ArduinoEigen.h>
@@ -5,20 +6,26 @@
 #include "pattern.h"
 
 constexpr uint32_t NUM_BYTES = 53; 
+constexpr size_t NUM_CS_PINS = 4;
+const uint32_t SPI_SPEED = 25000000;
+const std::array<uint8_t,NUM_CS_PINS> SPI_CS_PINS {0,2,3,4};
 
-const uint8_t  SPI_CS_PIN = 0;
+//const std::array<uint8_t,NUM_CS_PINS> SPI_CS_PINS {2,3,4,0};
+//const std::array<uint8_t,NUM_CS_PINS> SPI_CS_PINS {3,4,0,2};
+//const uint8_t  SPI_CS_PIN = 0;
 //const uint8_t  SPI_CS_PIN = 2;
 //const uint8_t  SPI_CS_PIN = 3;
 //const uint8_t  SPI_CS_PIN = 4;
-const uint32_t SPI_SPEED = 10000000;
 
 
 SPISettings spi_settings(SPI_SPEED, MSBFIRST, SPI_MODE3);
 
 void setup() {
     Serial.begin(115200);
-    pinMode(SPI_CS_PIN, OUTPUT);
-    digitalWrite(SPI_CS_PIN, HIGH);
+    for (auto cs_pin : SPI_CS_PINS) {
+        pinMode(cs_pin, OUTPUT);
+        digitalWrite(cs_pin, HIGH);
+    }
     SPI.begin();
 }
 
@@ -38,15 +45,17 @@ void loop() {
     }
     
     Message msg; 
-    msg.from_pattern(pat);
-
-    SPI.beginTransaction(spi_settings);
-    digitalWrite(SPI_CS_PIN, LOW);
-    delayMicroseconds(5);
-    SPI.transfer(msg.data_ptr(), msg.num_bytes());
-    delayMicroseconds(5);
-    SPI.endTransaction();
-    digitalWrite(SPI_CS_PIN, HIGH);
+    for (auto cs_pin : SPI_CS_PINS) {
+        msg.from_pattern(pat);
+        SPI.beginTransaction(spi_settings);
+        digitalWrite(cs_pin, LOW);
+        delayMicroseconds(5);
+        SPI.transfer(msg.data_ptr(), msg.num_bytes());
+        delayMicroseconds(5);
+        SPI.endTransaction();
+        digitalWrite(cs_pin, HIGH);
+        delayMicroseconds(5);
+    }
 
     if (count%25 == 0) {
         if (increasing) {
@@ -65,6 +74,6 @@ void loop() {
     }
     count++;
 
-    delayMicroseconds(1500);
+    delayMicroseconds(1000);
 
 }
